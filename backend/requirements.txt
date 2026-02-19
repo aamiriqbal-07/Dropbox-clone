@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+aiomysql
+pymysql
+aioboto3
+minio
+pydantic-settings
+python-multipart
