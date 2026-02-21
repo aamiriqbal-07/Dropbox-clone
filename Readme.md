@@ -68,6 +68,14 @@ If you need to change any setting (e.g., file size limit), edit the `environment
   docker-compose down -v
   ```
 
+## NOTE: Readme for backend and frontend have been provided here:
+
+- Backend Readme file:
+  [Link here](https://github.com/aamiriqbal-07/Dropbox-clone/blob/main/backend/README.md)
+
+- Frontnd Readme file:
+  [Link here](https://github.com/aamiriqbal-07/Dropbox-clone/blob/main/frontend/README.md)
+
 ## License
 
 MIT
