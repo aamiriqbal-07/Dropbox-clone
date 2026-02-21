@@ -27,7 +27,7 @@ class FileRepository:
             stored_name=stored_name,
             size=file.size,
             mime_type=file.mime_type,
-            upload_time=datetime.utcnow()  # We could also retrieve from DB
+            upload_time=datetime.utcnow()
         )
 
     async def get_by_id(self, file_id: str) -> FileMetadata | None:

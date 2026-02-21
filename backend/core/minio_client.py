@@ -8,7 +8,7 @@ def get_minio_client():
         secret_key=settings.minio_secret_key,
         secure=settings.minio_use_ssl
     )
-    # Ensure bucket exists (create if not)
+
     if not client.bucket_exists(settings.minio_bucket):
         client.make_bucket(settings.minio_bucket)
     return client

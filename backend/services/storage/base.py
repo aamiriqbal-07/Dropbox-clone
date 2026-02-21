@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
-from typing import BinaryIO
+from typing import BinaryIO, Optional
 
 class Storage(ABC):
     @abstractmethod
-    async def save(self, file_data: BinaryIO, object_name: str, content_type: str) -> str:
-        """Save file and return object identifier (e.g., object name)."""
+    async def save(self, file_data: BinaryIO, object_name: str, content_type: str, size: Optional[int] = None) -> str:
+        """Save file and return object identifier. If size is known, it can be used."""
         pass
 
     @abstractmethod

@@ -5,11 +5,10 @@ from services.file_service import FileService
 from core.database import get_db_connection
 
 async def get_db_conn(request: Request):
-    # Retrieve a connection from the pool stored in app.state
     async with request.app.state.db_pool.acquire() as conn:
         yield conn
 
 async def get_file_service(conn = Depends(get_db_conn)) -> FileService:
     repo = FileRepository(conn)
-    storage = MinioStorage()  # storage is stateless, can be shared
+    storage = MinioStorage()
     return FileService(storage, repo)

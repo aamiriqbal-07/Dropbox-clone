@@ -13,32 +13,39 @@ class MinioStorage(Storage):
         )
         self.bucket = settings.minio_bucket
 
-    async def save(self, file_data, object_name: str, content_type: str) -> str:
-        """Upload file to MinIO using a thread to avoid blocking."""
+    async def save(self, file_data, object_name: str, content_type: str, size: int = None) -> str:
         def _upload():
-            # file_data is a synchronous file-like object after seek(0)
-            self.client.put_object(
-                self.bucket,
-                object_name,
-                file_data,
-                length=-1,                # read until EOF
-                content_type=content_type
-            )
+            if size is not None:
+                # Known size
+                self.client.put_object(
+                    self.bucket,
+                    object_name,
+                    file_data,
+                    length=size,
+                    content_type=content_type
+                )
+            else:
+                self.client.put_object(
+                    self.bucket,
+                    object_name,
+                    file_data,
+                    length=-1,
+                    part_size=10 * 1024 * 1024,
+                    content_type=content_type
+                )
         await asyncio.to_thread(_upload)
         return object_name
 
     async def get(self, object_name: str):
-        """Return an async generator that yields file chunks."""
         def _get_stream():
             return self.client.get_object(self.bucket, object_name)
 
-        # Get the synchronous stream in a thread
         response = await asyncio.to_thread(_get_stream)
 
         async def chunk_generator():
             try:
                 while True:
-                    chunk = await asyncio.to_thread(response.read, 64 * 1024)  # 64KB chunks
+                    chunk = await asyncio.to_thread(response.read, 64 * 1024)
                     if not chunk:
                         break
                     yield chunk
@@ -49,7 +56,6 @@ class MinioStorage(Storage):
         return chunk_generator()
 
     async def delete(self, object_name: str):
-        """Delete object from MinIO."""
         def _delete():
             self.client.remove_object(self.bucket, object_name)
         await asyncio.to_thread(_delete)

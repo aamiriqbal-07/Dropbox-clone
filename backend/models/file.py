@@ -13,7 +13,7 @@ class FileMetadata(FileMetadataCreate):
     upload_time: datetime
 
     class Config:
-        from_attributes = True  # or orm_mode = True for Pydantic v1
+        from_attributes = True
 
 class FileMetadataList(BaseModel):
     total: int

@@ -13,10 +13,9 @@ async def upload_file(
     file: UploadFile = File(...),
     service: FileService = Depends(get_file_service)
 ):
-    # Request ID is already injected by middleware; we can access via request if needed
     logger.info(f"Uploading file: {file.filename}")
     try:
-        result = await service.upload_file(file, max_size=10*1024*1024)  # from config
+        result = await service.upload_file(file, max_size=10*1024*1024)
         return result
     except HTTPException:
         raise

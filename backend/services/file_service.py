@@ -11,21 +11,23 @@ class FileService:
         self.repo = repo
 
     async def upload_file(self, file: UploadFile, max_size: int) -> FileMetadata:
-        # Validate size
         file.file.seek(0, os.SEEK_END)
         size = file.file.tell()
         await file.seek(0)
         if size > max_size:
             raise HTTPException(status_code=413, detail="File too large")
 
-        # Generate unique stored name
         ext = os.path.splitext(file.filename)[1]
         stored_name = f"{uuid4().hex}{ext}"
 
-        # Save to storage
-        await self.storage.save(file.file, stored_name, file.content_type or "application/octet-stream")
+        # Pass the size to storage.save()
+        await self.storage.save(
+            file.file,
+            stored_name,
+            file.content_type or "application/octet-stream",
+            size=size
+        )
 
-        # Save metadata
         meta_create = FileMetadataCreate(
             original_name=file.filename,
             size=size,
@@ -38,7 +40,6 @@ class FileService:
         meta = await self.repo.get_by_id(file_id)
         if not meta:
             raise HTTPException(status_code=404, detail="File not found")
-        # Get stream from storage
         stream = await self.storage.get(meta.stored_name)
         return stream, meta
 
