@@ -17,15 +17,19 @@ ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
 # Build the app
 RUN npm run build
 
-# Production stage with nginx
-FROM nginx:alpine
+# Production stage with node and serve
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Install serve globally
+RUN npm install -g serve
 
 # Copy built assets from builder
-COPY --from=builder /app/dist /usr/share/nginx/html
+COPY --from=builder /app/dist ./dist
 
-# Copy custom nginx config (optional, but good practice)
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Expose port (serve defaults to 3000, but you can change with -l)
+EXPOSE 3000
 
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+# Start serve to serve static files
+CMD ["serve", "-s", "dist", "-l", "3000"]
