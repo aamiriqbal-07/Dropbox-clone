@@ -38,8 +38,6 @@ services:
     build: ./backend
     ports:
       - "8000:8000"
-    env_file:
-      - ./backend/.env
     environment:
       - DB_HOST=mysql
       - DB_PORT=3306
@@ -60,6 +58,7 @@ services:
       - ./backend/logs:/app/logs
     networks:
       - app-network
+    restart: on-failure
       
   frontend:
     build:
